@@ -1,8 +1,7 @@
-import { useDispatch } from 'react-redux';
 import Card from '../UI/Card';
 import classes from './ProductItem.module.css';
-import { CartActions, addItemToCart } from '../../store/cart-slice';
-import { Dispatch } from '@reduxjs/toolkit';
+import { addItemToCart } from '../../store/cart-slice';
+import { useAppDispatch } from '../../store/store';
 
 type ProductItemProps = {
   id: string;
@@ -14,7 +13,7 @@ type ProductItemProps = {
 const ProductItem = (props: ProductItemProps) => {
   const { id, title, price, description } = props;
 
-  const dispatch = useDispatch<Dispatch<CartActions>>();
+  const dispatch = useAppDispatch();
 
   const addToCartHandler = () => {
     dispatch(addItemToCart({ id, title, price }));

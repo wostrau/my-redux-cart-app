@@ -1,7 +1,8 @@
 import { configureStore } from '@reduxjs/toolkit';
 
-import uiReducer from './ui-slice';
-import cartReducer from './cart-slice';
+import uiReducer, { UiActions } from './ui-slice';
+import cartReducer, { CartActions } from './cart-slice';
+import { useDispatch } from 'react-redux';
 
 const store = configureStore({
   reducer: {
@@ -10,7 +11,9 @@ const store = configureStore({
   },
 });
 
-
 export type RootState = ReturnType<typeof store.getState>;
+export type RootActions = CartActions | UiActions;
+export type AppDispatch = typeof store.dispatch;
+export const useAppDispatch = () => useDispatch<AppDispatch>();
 
 export default store;

@@ -11,6 +11,7 @@ interface CartItem {
 interface CartState {
   items: CartItem[];
   totalQuantity: number;
+  changed: boolean;
 }
 
 interface AddItemPayload {
@@ -28,8 +29,13 @@ const cartSlice = createSlice({
   initialState: {
     items: [],
     totalQuantity: 0,
+    changed: false,
   } as CartState,
   reducers: {
+    replaceCart(state, action: PayloadAction<CartState>) {
+      state.totalQuantity = action.payload.totalQuantity;
+      state.items = action.payload.items;
+    },
     addItemToCart(state, action: PayloadAction<AddItemPayload>) {
       const newItem = action.payload;
       const existingItem = state.items.find((item) => item.id === newItem.id);
@@ -46,6 +52,7 @@ const cartSlice = createSlice({
         existingItem.totalPrice += existingItem.price;
       }
       state.totalQuantity++;
+      state.changed = true;
     },
     removeItemFromCart(state, action: PayloadAction<RemoveItemPayload>) {
       const id = action.payload.itemId;
@@ -57,16 +64,22 @@ const cartSlice = createSlice({
         existingItem.totalPrice -= existingItem.price;
       }
       state.totalQuantity--;
+      state.changed = true;
     },
   },
 });
 
-export const { addItemToCart, removeItemFromCart } = cartSlice.actions;
+export const { addItemToCart, removeItemFromCart, replaceCart } =
+  cartSlice.actions;
 export default cartSlice.reducer;
 
 export type CartStateType = CartState;
 export type CartItemType = CartItem;
 
+type ReplaceCartAction = PayloadAction<CartState>;
 type AddItemToCartAction = PayloadAction<AddItemPayload>;
 type RemoveItemFromCartAction = PayloadAction<RemoveItemPayload>;
-export type CartActions = AddItemToCartAction | RemoveItemFromCartAction;
+export type CartActions =
+  | AddItemToCartAction
+  | RemoveItemFromCartAction
+  | ReplaceCartAction;

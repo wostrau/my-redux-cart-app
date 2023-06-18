@@ -1,4 +1,8 @@
-import { PayloadAction, createSlice, ActionCreatorWithPayload } from '@reduxjs/toolkit';
+import {
+  PayloadAction,
+  createSlice,
+  ActionCreatorWithPayload,
+} from '@reduxjs/toolkit';
 
 export type NotificationType = {
   status: string;
@@ -40,5 +44,7 @@ export const { toggle, showNotification } = uiSlice.actions as {
 
 export default uiSlice.reducer;
 
-export type UiActions = typeof uiSlice.actions;
+type ToggleAction = typeof uiSlice.actions.toggle;
+type ShowNotificationAction = PayloadAction<NotificationType>;
+export type UiActions = ToggleAction | ShowNotificationAction;
 export type UiState = ReturnType<typeof uiSlice.reducer>;

@@ -4,64 +4,35 @@ import Layout from './components/Layout/Layout';
 import Cart from './components/Cart/Cart';
 import Products from './components/Shop/Products';
 import Notification from './components/UI/Notification';
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from './store/store';
-import { NotificationType, showNotification } from './store/ui-slice';
+import { useSelector } from 'react-redux';
+import { RootState, useAppDispatch } from './store/store';
+import { NotificationType } from './store/ui-slice';
+import { sendCartData, fetchCartData } from './store/cart-actions';
+import { CartStateType } from './store/cart-slice';
 
 let isInitial = true;
 
 function App() {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const showCart = useSelector<RootState, boolean>(
     (state) => state.ui.cartIsVisible
   );
   const notification = useSelector<RootState, NotificationType | null>(
     (state) => state.ui.notification
   );
-  const cart = useSelector<RootState, any>((state) => state.cart);
+  const cart = useSelector<RootState, CartStateType>((state) => state.cart);
 
   useEffect(() => {
-    const sendCartData = async () => {
-      dispatch(
-        showNotification({
-          status: 'pending',
-          title: 'Sending...',
-          message: 'Sending cart data!',
-        })
-      );
+    dispatch(fetchCartData());
+  }, [dispatch]);
 
-      const response = await fetch(
-        'https://react-http-39eeb-default-rtdb.europe-west1.firebasedatabase.app/cart.json',
-        { method: 'PUT', body: JSON.stringify(cart) }
-      );
-
-      if (!response.ok) throw new Error('Sending cart data failed.');
-
-      const responseData = await response.json();
-
-      dispatch(
-        showNotification({
-          status: 'success',
-          title: 'Success!',
-          message: 'Sent cart data successfully',
-        })
-      );
-    };
-
+  useEffect(() => {
     if (isInitial) {
       isInitial = false;
       return;
     }
 
-    sendCartData().catch((error) => {
-      dispatch(
-        showNotification({
-          status: 'error',
-          title: 'Error!',
-          message: 'Sending cart data failed',
-        })
-      );
-    });
+    if (cart.changed) dispatch(sendCartData(cart));
   }, [cart, dispatch]);
 
   return (
